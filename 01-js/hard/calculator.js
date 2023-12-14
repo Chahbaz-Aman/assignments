@@ -21,7 +21,7 @@ class Calculator {
     this.result = 0;
   }
 
-  get getResult() {
+  getResult() {
     return this.result;
   }
 
@@ -42,92 +42,23 @@ class Calculator {
   }
 
   divide(x) {
-    this.result/=x;
+    if (x === 0) {
+      throw(Error())
+    }
+    else {
+      this.result/=x; 
+    }
   }
 
   calculate(expression) {
-    expression = expression.replace(/\s/g,'');
-    if (expression.length !== expression.replace(/[^\d\(\)\+\-\*\/]/g,'').length) {
-      throw TypeError(`Invalid characters found in expression \"${expression}\"`);
+    let result = eval(expression);
+    if (Math.abs(result) === Infinity) {
+      throw(Error())
     }
-
-    function isOperator(char) {
-      return ['+', '-', '*', '/'].includes(char);
+    else {
+      this.result = result;
     }
-  
-    function applyOperation(operator, operand1, operand2) {
-      switch (operator) {
-        case '+':
-          return operand1 + operand2;
-        case '-':
-          return operand1 - operand2;
-        case '*':
-          return operand1 * operand2;
-        case '/':
-          return operand1 / operand2;
-      }
-    }
-  
-    const stack = [];
-    
-    for (let i = 0; i < expression.length; i++) {
-      const char = expression[i];
-      
-      if (/[0-9]/.test(char)) {
-        let num = parseInt(char);
-        
-        
-        while (i + 1 < expression.length && /[0-9]/.test(expression[i + 1])) {
-          num = num * 10 + parseInt(expression[i + 1]);
-          i++;
-        }
-  
-        stack.push(num);
-      } else if (isOperator(char)) {
-        
-        stack.push(char);
-      } else if (char === '(') {
-        
-        stack.push(char);
-      } else if (char === ')') {
-        
-        while (stack.length > 1) {
-          const operand2 = stack.pop();
-          const operator = stack.pop();
-          const operand1 = stack.pop();
-          const result = applyOperation(operator, operand1, operand2);
-          console.log(result);
-          if (stack[stack.length - 1] !== '(') {
-            stack.push(result);
-          }
-          else {
-            stack.pop();
-            stack.push(result);
-            break;
-          }
-        }
-      }
-    }
-
-    while (stack.length > 1) {
-      const operand2 = stack.pop();
-      const operator = stack.pop();
-      const operand1 = stack.pop();
-      stack.push(applyOperation(operator, operand1, operand2));
-    }
-  
-    return stack[0];
   }
 }
-
-const calc = new Calculator();
-console.log(calc.getResult);
-calc.add(5)
-console.log(calc.getResult);
-calc.divide(3)
-console.log(calc.getResult);
-calc.clear()
-console.log(calc.getResult);
-console.log(calc.calculate('(1 + (2 + 7)*3) * 4 / (2 * (1 + (3 - 2))) '))
 
 module.exports = Calculator;
